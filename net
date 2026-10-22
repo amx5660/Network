@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+CONTAINERS_PATH=/var/lib/lxc/
+
+
+start_containers() {
+	for container in $(ls $CONTAINERS_PATH); do
+		lxc-start -n $container
+		echo "$container started"
+	done
+	return 0
+}
+
+stop_containers() {
+	for container in $(ls $CONTAINERS_PATH); do
+		lxc-stop -n $container
+		echo "$container stopped"
+	done
+	return 0
+}
+
+repair_containers() {
+	for container in $(ls $CONTAINERS_PATH); do
+		lxc-attach -n $container -- systemctl restart networking
+		echo "$container repaired"
+	done
+	return 0
+}
+
+
+for arg in "$@"; do
+	if [[ $arg == "init" ]]; then
+		echo "Initializing containers"
+	fi
+	if [[ $arg == "start" ]]; then
+		echo "---Starting containers---"
+		start_containers
+	fi
+	if [[ $arg == "stop" ]]; then
+		echo "---Stopping containers---"
+		stop_containers
+	fi
+	if [[ $arg == "repair" ]]; then
+		echo "---Repairing containers---"
+		repair_containers
+	fi
+done
