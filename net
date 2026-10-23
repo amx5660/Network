@@ -70,6 +70,11 @@ containers_configuration(){
 			cp "./configs/$container/interfaces" "/var/lib/lxc/$container/rootfs/etc/network/interfaces"
 		fi
 
+		if [[ -f "./configs/$container/resolved.conf" ]]; then
+			cp "./configs/$container/resolved.conf" "/var/lib/lxc/$container/rootfs/etc/systemd/resolved.conf"
+		fi
+
+
 		if [[ -f "./configs/$container/iptables" ]]; then
 			cp "./configs/$container/iptables" "/var/lib/lxc/$container/rootfs/etc/iptables/rules.v4"
 		fi
@@ -87,7 +92,8 @@ containers_configuration(){
 	return 0
 }
 
-containers_list=$(lxc-ls)
+#containers_list=$(lxc-ls)
+containers_list=$(lxc-ls -1 | grep -v "V2$" | tr "\n" " ")
 
 for arg in "$@"; do
 	case "$arg" in
