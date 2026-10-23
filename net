@@ -24,10 +24,6 @@ repair_containers() {
 	return 0
 }
 
-initialization() {
-	return 0
-}
-
 lxc_install() {
 	if ! dpkg -s lxc > /dev/null; then
 		local response
