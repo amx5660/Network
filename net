@@ -28,13 +28,73 @@ initialization() {
 	return 0
 }
 
+lxc_install() {
+	if ! dpkg -s lxc > /dev/null; then
+		local response
+
+		echo ""
+		read -r -p "Do you want to install lxc? [Y/n] " response 
+
+		case "$response" in "" | "y" | "Y") apt install -y lxc;;
+					         *) echo "Abort" 
+						    return 1;;
+		esac
+	fi
+
+	return 0
+}
+
+containers_creation() {
+	for container in $(ls ./configs); do
+		local packages=$(cat "./configs/$container/packages" | tr "\n" " ")
+
+		lxc-create -n "$container" -t download -- --dist debian --release trixie --arch amd64
+		lxc-start -n "$container"
+		lxc-attach -n "$container" -- bash -c "apt update && apt install -y $packages"
+		lxc-stop -n "$container"
+
+	done
+
+	return 0
+}
+
+
+containers_configuration(){
+	for container in $(ls ./configs); do
+
+		if [[ -f "./configs/$container/config" ]]; then
+			cp "./configs/$container/config" "/var/lib/lxc/$container/config"
+		fi
+
+		if [[ -f "./configs/$container/interfaces" ]]; then
+			cp "./configs/$container/interfaces" "/var/lib/lxc/$container/rootfs/etc/network/interfaces"
+		fi
+
+		if [[ -f "./configs/$container/iptables" ]]; then
+			cp "./configs/$container/iptables" "/var/lib/lxc/$container/rootfs/etc/iptables/rules.v4"
+		fi
+
+		if [[ -f "./configs/$container/named.conf.local" ]]; then
+			cp "./configs/$container/named.conf.local" "/var/lib/lxc/$container/rootfs/etc/bind/named.conf.local"
+		fi
+
+		if compgen -G "./configs/$container/db.*" > /dev/null; then
+			cp "./configs/$container/db.*" "/var/lib/lxc/$container/rootfs/etc/bind/"
+		fi
+
+	done
+
+	return 0
+}
+
 containers_list=$(lxc-ls)
 
 for arg in "$@"; do
-	case $arg in
+	case "$arg" in
 		"init")
 		echo "---Initializing containers---"
-		initialization
+		containers_creation
+		containers_configuration
 		;;&
 
 		"start")
