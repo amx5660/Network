@@ -98,6 +98,7 @@ for arg in "$@"; do
 	case "$arg" in
 		"init")
 		echo "---Initializing containers---"
+		lxc_install
 		containers_creation
 		containers_configuration
 		;;&
