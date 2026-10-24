@@ -1,0 +1,14 @@
+$TTL    604800
+@       IN      SOA     server-dns.potato. admin.potato. (
+                  0         ; Serial
+             604800         ; Refresh
+              86400         ; Retry
+            2419200         ; Expire
+             604800 )       ; Negative Cache TTL
+
+
+@       IN      NS      server-dns.potato.
+server-dns IN    A       10.64.0.2
+
+server1 IN	 A	 10.0.0.1
+server2 IN       A       10.0.0.2 		

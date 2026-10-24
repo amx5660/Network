@@ -31,7 +31,8 @@ lxc_install() {
 		echo ""
 		read -r -p "Do you want to install lxc? [Y/n] " response 
 
-		case "$response" in "" | "y" | "Y") apt install -y lxc;;
+		case "$response" in "" | "y" | "Y") apt update lxc
+						    apt install -y lxc;;
 					         *) echo "Abort" 
 						    return 1;;
 		esac
@@ -70,7 +71,6 @@ containers_configuration(){
 			cp "./configs/$container/resolved.conf" "/var/lib/lxc/$container/rootfs/etc/systemd/resolved.conf"
 		fi
 
-
 		if [[ -f "./configs/$container/iptables" ]]; then
 			cp "./configs/$container/iptables" "/var/lib/lxc/$container/rootfs/etc/iptables/rules.v4"
 		fi
@@ -79,8 +79,12 @@ containers_configuration(){
 			cp "./configs/$container/named.conf.local" "/var/lib/lxc/$container/rootfs/etc/bind/named.conf.local"
 		fi
 
-		if compgen -G "./configs/$container/db.*" > /dev/null; then
-			cp "./configs/$container/db.*" "/var/lib/lxc/$container/rootfs/etc/bind/"
+		if [[ -f "./configs/$container/named.conf.options" ]]; then
+			cp "./configs/$container/named.conf.options" "/var/lib/lxc/$container/rootfs/etc/bind/named.conf.options"
+		fi
+
+		if [[ -f "./configs/$container/db.potato" ]]; then
+			cp "./configs/$container/db.potato" "/var/lib/lxc/$container/rootfs/etc/bind/db.potato"
 		fi
 
 	done
@@ -88,8 +92,7 @@ containers_configuration(){
 	return 0
 }
 
-#containers_list=$(lxc-ls)
-containers_list=$(lxc-ls -1 | grep -v "V2$" | tr "\n" " ")
+containers_list=$(lxc-ls)
 
 for arg in "$@"; do
 	case "$arg" in
