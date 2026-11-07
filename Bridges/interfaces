@@ -1,0 +1,62 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto brClient1
+iface brClient1 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brClient2  
+iface brClient2 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brServ1
+iface brServ1 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brServ2
+iface brServ2 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brR1R2
+iface brR1R2 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brR2R3 
+iface brR2R3 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brR1R3
+iface brR1R3 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brR3R4
+iface brR3R4 inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+
+auto brDNS
+iface brDNS inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0

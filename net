@@ -24,6 +24,14 @@ repair_containers() {
 	return 0
 }
 
+destroy_containers() {
+	for container in $containers_list; do
+		lxc-destroy -n $container
+		echo "$container destroyed"
+	done
+	return 0;
+}
+
 lxc_install() {
 	if ! dpkg -s lxc > /dev/null; then
 		local response
@@ -33,6 +41,23 @@ lxc_install() {
 
 		case "$response" in "" | "y" | "Y") apt update lxc
 						    apt install -y lxc;;
+					         *) echo "Abort" 
+						    return 1;;
+		esac
+	fi
+
+	return 0
+}
+
+ifupdown_install() {
+	if ! dpkg -s ifupdown > /dev/null; then
+		local response
+
+		echo ""
+		read -r -p "Do you want to install ifupdown? [Y/n] " response 
+
+		case "$response" in "" | "y" | "Y") apt update ifupdown
+						    apt install -y ifupdown;;
 					         *) echo "Abort" 
 						    return 1;;
 		esac
@@ -53,6 +78,11 @@ containers_creation() {
 	done
 
 	return 0
+}
+
+bridges_configuration() {
+	cp "./Bridge/interfaces" "/etc/network/interfaces"
+	return 0;
 }
 
 
@@ -99,6 +129,8 @@ for arg in "$@"; do
 		"init")
 		echo "---Initializing containers---"
 		lxc_install
+		ifupdown_install
+		bridges_configuration
 		containers_creation
 		containers_configuration
 		;;&
@@ -116,6 +148,11 @@ for arg in "$@"; do
 		"stop")
 		echo "---Stopping containers---"
 		stop_containers
+		;;&
+
+		"destroy")
+		echo "---Destroying containers---"
+		destroy_containers
 		;;&
 	esac
 
