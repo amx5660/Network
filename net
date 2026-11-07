@@ -76,7 +76,7 @@ containers_creation() {
 }
 
 bridges_configuration() {
-	cp "./Setup/interfaces" "/etc/network/interfaces"
+	cp "./setup/interfaces" "/etc/network/interfaces"
 	systemctl restart networking
 	return 0;
 }
